@@ -5,6 +5,7 @@ static VALUE hello(VALUE self) {
 }
 
 void Init_text_ux(void) {
-  VALUE rb_cHoge = rb_define_class("Hoge", rb_cObject);
+  VALUE rb_cHoge;
+  rb_cHoge = rb_define_class("Hoge", rb_cObject);
   rb_define_method(rb_cHoge, "hello", hello, 0);
 }
