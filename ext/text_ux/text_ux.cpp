@@ -15,6 +15,7 @@ static void  ux_free(ux::Trie* ptr);
 static VALUE ux_alloc(VALUE klass);
 static VALUE ux_initialize(VALUE self);
 static VALUE ux_build(VALUE self, VALUE words, VALUE is_tail_ux);
+static VALUE ux_prefix_search(VALUE self, VALUE word);
 
 extern "C" void Init_text_ux(void) {
   rb_cHoge = rb_define_class("Hoge", rb_cObject);
@@ -24,13 +25,9 @@ extern "C" void Init_text_ux(void) {
   rb_define_alloc_func(rb_cTextUx, ux_alloc);
   rb_define_private_method(rb_cTextUx, "initialize", RUBY_METHOD_FUNC(ux_initialize), 0);
   rb_define_method(rb_cTextUx, "build", RUBY_METHOD_FUNC(ux_build), 2);
+  rb_define_method(rb_cTextUx, "prefix_search", RUBY_METHOD_FUNC(ux_prefix_search), 1);
 
-  // std::string line = "hoge";
-  // size_t retLen = 0;
-  // id_t id = trie.prefixSearch(line.c_str(), line.size(), retLen);
-  // printf("================\n");
-  // printf("%d\n", id);
-  // printf("================\n");
+  rb_define_const(rb_cTextUx, "NOTFOUND", ux::NOTFOUND);
 }
 
 static void
@@ -72,4 +69,23 @@ ux_build(VALUE self, VALUE words, VALUE is_tail_ux)
   trie->build(keyList, true);
 
   return self;
+}
+
+static VALUE
+ux_prefix_search(VALUE self, VALUE word)
+{
+  Check_Type(word, T_STRING);
+
+  std::string w = StringValuePtr(word);
+
+  ux::Trie* trie;
+  Data_Get_Struct(self, ux::Trie, trie);
+  size_t ret_len;
+  ux::id_t id = trie->prefixSearch(w.c_str(), w.size(), ret_len);
+  if ( id == ux::NOTFOUND ) {
+    return Qnil;
+  } else {
+    std::string key = trie->decodeKey(id);
+    return rb_str_new2(key.c_str());
+  }
 }
