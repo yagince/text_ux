@@ -13,9 +13,12 @@ static VALUE ux_initialize(VALUE self);
 static VALUE ux_build(VALUE self, VALUE words, VALUE is_tail_ux);
 static VALUE ux_save(VALUE self, VALUE file_name);
 static VALUE ux_load(VALUE self, VALUE file_name);
+
 static VALUE ux_prefix_search(VALUE self, VALUE word);
 static VALUE ux_common_prefix_search(VALUE self, VALUE word);
 static VALUE ux_predictive_search(VALUE self, VALUE word);
+static VALUE ux_decode_key(VALUE self, VALUE index);
+
 static VALUE ux_size(VALUE self);
 static VALUE ux_clear(VALUE self);
 static VALUE ux_alloc_size(VALUE self);
@@ -28,9 +31,12 @@ extern "C" void Init_text_ux(void) {
   rb_define_method(rb_cTextUx, "build", RUBY_METHOD_FUNC(ux_build), 2);
   rb_define_method(rb_cTextUx, "save", RUBY_METHOD_FUNC(ux_save), 1);
   rb_define_method(rb_cTextUx, "load", RUBY_METHOD_FUNC(ux_load), 1);
+
   rb_define_method(rb_cTextUx, "prefix_search", RUBY_METHOD_FUNC(ux_prefix_search), 1);
   rb_define_method(rb_cTextUx, "common_prefix_search", RUBY_METHOD_FUNC(ux_common_prefix_search), 1);
   rb_define_method(rb_cTextUx, "predictive_search", RUBY_METHOD_FUNC(ux_predictive_search), 1);
+  rb_define_method(rb_cTextUx, "decode_key", RUBY_METHOD_FUNC(ux_decode_key), 1);
+
   rb_define_method(rb_cTextUx, "size", RUBY_METHOD_FUNC(ux_size), 0);
   rb_define_method(rb_cTextUx, "clear", RUBY_METHOD_FUNC(ux_clear), 0);
   rb_define_method(rb_cTextUx, "alloc_size", RUBY_METHOD_FUNC(ux_alloc_size), 0);
@@ -170,11 +176,26 @@ ux_predictive_search(VALUE self, VALUE word)
 }
 
 static VALUE
+ux_decode_key(VALUE self, VALUE index)
+{
+  
+  ux::id_t idx = NUM2INT(index);
+  ux::Trie* trie = getTrie(self);
+
+  if (trie->size() <= idx) {
+    return Qnil;
+  }
+
+  std::string key = trie->decodeKey(idx);
+  return key.empty() ? Qnil : rb_str_new2(key.c_str());
+}
+
+static VALUE
 ux_size(VALUE self)
 {
   ux::Trie* trie = getTrie(self);
   size_t size = trie->size();
-  return INT2FIX(size);
+  return INT2NUM(size);
 }
 static VALUE
 ux_clear(VALUE self)

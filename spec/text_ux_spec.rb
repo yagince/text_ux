@@ -84,6 +84,18 @@ describe TextUx do
     end
   end
 
+  describe :decode_key do
+    context "結果がある場合" do
+      it "一致するキーが取得できる" do
+        expect(builded.decode_key(0)).to eq("hoge")
+      end
+    end
+
+    context "結果がない場合" do
+      it { expect(builded.decode_key(100000)).to be nil }
+    end
+  end
+
   describe :size do
     it { expect(builded.size).to eq(5) }
   end
@@ -99,5 +111,6 @@ describe TextUx do
   describe :alloc_stat do
     it { expect(builded.alloc_stat).to_not be_empty }
   end
+
 end
 
