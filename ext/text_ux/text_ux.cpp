@@ -24,7 +24,7 @@ extern "C" void Init_text_ux(void) {
   rb_define_const(rb_cTextUx, "NOTFOUND", ux::NOTFOUND);
 }
 
-static ux::Trie* getUx(VALUE self) {
+static ux::Trie* getTrie(VALUE self) {
   ux::Trie* p;
   Data_Get_Struct(self, ux::Trie, p);
   return p;
@@ -64,8 +64,7 @@ ux_build(VALUE self, VALUE words, VALUE is_tail_ux)
     keyList.push_back(std::string(word));
   }
 
-  ux::Trie* trie;
-  Data_Get_Struct(self, ux::Trie, trie);
+  ux::Trie* trie = getTrie(self);
   trie->build(keyList, true);
 
   return self;
@@ -77,7 +76,7 @@ ux_save(VALUE self, VALUE file_name)
   Check_Type(file_name, T_STRING);
 
   std::string f = StringValuePtr(file_name);
-  ux::Trie* trie = getUx(self);
+  ux::Trie* trie = getTrie(self);
   if (trie->save(f.c_str()) != ux::Trie::SUCCESS ) {
     rb_exc_raise(rb_str_new2("SaveFailed."));
   }
@@ -91,8 +90,7 @@ ux_prefix_search(VALUE self, VALUE word)
 
   std::string w = StringValuePtr(word);
 
-  ux::Trie* trie;
-  Data_Get_Struct(self, ux::Trie, trie);
+  ux::Trie* trie = getTrie(self);
   size_t ret_len;
   ux::id_t id = trie->prefixSearch(w.c_str(), w.size(), ret_len);
   if ( id == ux::NOTFOUND ) {
