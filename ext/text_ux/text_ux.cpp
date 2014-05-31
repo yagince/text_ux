@@ -3,6 +3,7 @@
 #include <ux/ux.hpp>
 #include <vector>
 #include <string>
+#include <sstream>
 
 VALUE rb_cTextUx;
 
@@ -15,6 +16,10 @@ static VALUE ux_load(VALUE self, VALUE file_name);
 static VALUE ux_prefix_search(VALUE self, VALUE word);
 static VALUE ux_common_prefix_search(VALUE self, VALUE word);
 static VALUE ux_predictive_search(VALUE self, VALUE word);
+static VALUE ux_size(VALUE self);
+static VALUE ux_clear(VALUE self);
+static VALUE ux_alloc_size(VALUE self);
+static VALUE ux_alloc_stat(VALUE self);
 
 extern "C" void Init_text_ux(void) {
   rb_cTextUx = rb_define_class("TextUx", rb_cObject);
@@ -26,8 +31,10 @@ extern "C" void Init_text_ux(void) {
   rb_define_method(rb_cTextUx, "prefix_search", RUBY_METHOD_FUNC(ux_prefix_search), 1);
   rb_define_method(rb_cTextUx, "common_prefix_search", RUBY_METHOD_FUNC(ux_common_prefix_search), 1);
   rb_define_method(rb_cTextUx, "predictive_search", RUBY_METHOD_FUNC(ux_predictive_search), 1);
-
-  rb_define_const(rb_cTextUx, "NOTFOUND", ux::NOTFOUND);
+  rb_define_method(rb_cTextUx, "size", RUBY_METHOD_FUNC(ux_size), 0);
+  rb_define_method(rb_cTextUx, "clear", RUBY_METHOD_FUNC(ux_clear), 0);
+  rb_define_method(rb_cTextUx, "alloc_size", RUBY_METHOD_FUNC(ux_alloc_size), 0);
+  rb_define_method(rb_cTextUx, "alloc_stat", RUBY_METHOD_FUNC(ux_alloc_stat), 0);
 }
 
 static ux::Trie* getTrie(VALUE self) {
@@ -160,4 +167,35 @@ ux_predictive_search(VALUE self, VALUE word)
     rb_ary_push(ary, rb_str_new2(key.c_str()));
   }
   return ary;
+}
+
+static VALUE
+ux_size(VALUE self)
+{
+  ux::Trie* trie = getTrie(self);
+  size_t size = trie->size();
+  return INT2FIX(size);
+}
+static VALUE
+ux_clear(VALUE self)
+{
+  ux::Trie* trie = getTrie(self);
+  trie->clear();
+  return Qtrue;
+}
+static VALUE
+ux_alloc_size(VALUE self)
+{
+  ux::Trie* trie = getTrie(self);
+  size_t size = trie->getAllocSize();
+  return INT2FIX(size);
+}
+static VALUE
+ux_alloc_stat(VALUE self)
+{
+  ux::Trie* trie = getTrie(self);
+  std::ostringstream os;
+  trie->stat(os);
+
+  return rb_str_new2(os.str().c_str());
 }

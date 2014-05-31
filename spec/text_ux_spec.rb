@@ -83,5 +83,21 @@ describe TextUx do
       it { expect(builded.predictive_search("XXX")).to be_empty }
     end
   end
+
+  describe :size do
+    it { expect(builded.size).to eq(5) }
+  end
+  describe :clear do
+    it "空になる" do
+      expect(builded.clear).to be true
+      expect(builded.size).to eq(0)
+    end
+  end
+  describe :alloc_size do
+    it { expect(builded.alloc_size).to be >= 0 }
+  end
+  describe :alloc_stat do
+    it { expect(builded.alloc_stat).to_not be_empty }
+  end
 end
 
