@@ -11,6 +11,7 @@ static VALUE ux_alloc(VALUE klass);
 static VALUE ux_initialize(VALUE self);
 static VALUE ux_build(VALUE self, VALUE words, VALUE is_tail_ux);
 static VALUE ux_save(VALUE self, VALUE file_name);
+static VALUE ux_load(VALUE self, VALUE file_name);
 static VALUE ux_prefix_search(VALUE self, VALUE word);
 
 extern "C" void Init_text_ux(void) {
@@ -19,6 +20,7 @@ extern "C" void Init_text_ux(void) {
   rb_define_private_method(rb_cTextUx, "initialize", RUBY_METHOD_FUNC(ux_initialize), 0);
   rb_define_method(rb_cTextUx, "build", RUBY_METHOD_FUNC(ux_build), 2);
   rb_define_method(rb_cTextUx, "save", RUBY_METHOD_FUNC(ux_save), 1);
+  rb_define_method(rb_cTextUx, "load", RUBY_METHOD_FUNC(ux_load), 1);
   rb_define_method(rb_cTextUx, "prefix_search", RUBY_METHOD_FUNC(ux_prefix_search), 1);
 
   rb_define_const(rb_cTextUx, "NOTFOUND", ux::NOTFOUND);
@@ -78,9 +80,22 @@ ux_save(VALUE self, VALUE file_name)
   std::string f = StringValuePtr(file_name);
   ux::Trie* trie = getTrie(self);
   if (trie->save(f.c_str()) != ux::Trie::SUCCESS ) {
-    rb_exc_raise(rb_str_new2("SaveFailed."));
+    rb_exc_raise(rb_str_new2("Save Error"));
   }
-  return Qtrue;
+  return self;
+}
+
+static VALUE
+ux_load(VALUE self, VALUE file_name)
+{
+  Check_Type(file_name, T_STRING);
+
+  std::string f = StringValuePtr(file_name);
+  ux::Trie* trie = getTrie(self);
+  if (trie->load(f.c_str()) != ux::Trie::SUCCESS ) {
+    rb_exc_raise(rb_str_new2("Load Error"));
+  }
+  return self;
 }
 
 static VALUE

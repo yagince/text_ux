@@ -16,7 +16,7 @@ describe TextUx do
   end
 
   describe :save do
-    let(:name) { "text.ux" }
+    let(:name) { "test.ux" }
 
     subject { builded.save(name) }
 
@@ -25,8 +25,22 @@ describe TextUx do
     end
     
     it "ファイルに保存される" do
-      expect(subject).to be true
+      expect(subject).to be builded
       expect(File.exist?(name)).to be true
+    end
+  end
+
+  describe :load do
+    let(:name) { "spec/fixtures/test.ux" }
+
+    subject { ux.load(name) }
+
+    it { expect(subject.prefix_search("hoge----foo")).to eq("hoge") }
+
+    context "loadに失敗した場合" do
+      it "例外がraiseされる" do
+        expect{ ux.load("hoge") }.to raise_error
+      end
     end
   end
 
