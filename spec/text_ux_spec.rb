@@ -3,6 +3,7 @@ require 'spec_helper'
 
 describe TextUx do
   let(:ux) { TextUx.new }
+  let(:builded) { ux.build(%w(hoge foo bar), true) }
   
   describe :build do
     context "配列を渡した場合" do
@@ -14,8 +15,22 @@ describe TextUx do
     end
   end
 
+  describe :save do
+    let(:name) { "text.ux" }
+
+    subject { builded.save(name) }
+
+    after do
+      File.exist?(name) and File.delete(name)
+    end
+    
+    it "ファイルに保存される" do
+      expect(subject).to be true
+      expect(File.exist?(name)).to be true
+    end
+  end
+
   describe :prefix_search do
-    let(:builded) { ux.build(%w(hoge foo bar), true) }
 
     context "結果がある場合" do
       it "一致するキーが取得できる" do
