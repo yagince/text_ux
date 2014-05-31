@@ -1,6 +1,6 @@
 # TextUx
 
-TODO: Write a gem description
+More Succinct Trie Data structure (binding for ux-trie)
 
 ## Installation
 
@@ -18,7 +18,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "text_ux"
+
+ux = TextUx.new
+ux.build(%w( hoge foo bar ), true)
+
+ux.prefix_search("hoge") # => hoge
+ux.prefix_search("baz") # => nil
+```
 
 ## Contributing
 
