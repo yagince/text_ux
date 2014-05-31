@@ -1,6 +1,7 @@
 # TextUx
 
 More Succinct Trie Data structure (binding for ux-trie)
+https://code.google.com/p/ux-trie/wiki/Tutorial_Japanese
 
 ## Installation
 
@@ -22,10 +23,16 @@ Or install it yourself as:
 require "text_ux"
 
 ux = TextUx.new
-ux.build(%w( hoge foo bar ), true)
+ux.build(%w( hoge foo bar baz footprint ), true)
 
-ux.prefix_search("hoge") # => hoge
-ux.prefix_search("baz") # => nil
+ux.prefix_search("hoge---foo") # => hoge
+ux.prefix_search("xxx") # => nil
+
+ux.common_prefix_search("footprint") # => ["foo", "footprint"]
+ux.common_prefix_search("xxx") # => []
+
+ux.predictive_search("fo") # => ["foo", "footprint"]
+ux.predictive_search("xxx") # => []
 ```
 
 ## Contributing
