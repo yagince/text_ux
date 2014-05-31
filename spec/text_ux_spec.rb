@@ -70,5 +70,18 @@ describe TextUx do
       it { expect(builded.common_prefix_search("XXX")).to be_empty }
     end
   end
+
+  describe :predictive_search do
+
+    context "結果がある場合" do
+      it "一致するキーが全て取得できる" do
+        expect(builded.predictive_search("fo")).to match_array(%w(foo footprint))
+      end
+    end
+
+    context "結果がない場合" do
+      it { expect(builded.predictive_search("XXX")).to be_empty }
+    end
+  end
 end
 
