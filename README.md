@@ -36,6 +36,10 @@ ux.common_prefix_search("xxx") # => []
 
 ux.predictive_search("fo") # => ["foo", "footprint"]
 ux.predictive_search("xxx") # => []
+
+ux.decode_key(0) # => "hoge"
+ux.decode_key(10000) # => nil
+
 ```
 
 ## Contributing
