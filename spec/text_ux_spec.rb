@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe TextUx do
   let(:ux) { TextUx.new }
-  let(:builded) { ux.build(%w(hoge foo bar), true) }
+  let(:builded) { ux.build(%w(hoge foo bar baz footprint), true) }
   
   describe :build do
     context "配列を渡した場合" do
@@ -54,6 +54,20 @@ describe TextUx do
 
     context "結果がない場合" do
       it { expect(builded.prefix_search("XXX")).to be_nil }
+    end
+  end
+
+
+  describe :common_prefix_search do
+
+    context "結果がある場合" do
+      it "一致するキーが全て取得できる" do
+        expect(builded.common_prefix_search("footprint")).to match_array(%w(foo footprint))
+      end
+    end
+
+    context "結果がない場合" do
+      it { expect(builded.common_prefix_search("XXX")).to be_empty }
     end
   end
 end

@@ -13,6 +13,7 @@ static VALUE ux_build(VALUE self, VALUE words, VALUE is_tail_ux);
 static VALUE ux_save(VALUE self, VALUE file_name);
 static VALUE ux_load(VALUE self, VALUE file_name);
 static VALUE ux_prefix_search(VALUE self, VALUE word);
+static VALUE ux_common_prefix_search(VALUE self, VALUE word);
 
 extern "C" void Init_text_ux(void) {
   rb_cTextUx = rb_define_class("TextUx", rb_cObject);
@@ -22,6 +23,7 @@ extern "C" void Init_text_ux(void) {
   rb_define_method(rb_cTextUx, "save", RUBY_METHOD_FUNC(ux_save), 1);
   rb_define_method(rb_cTextUx, "load", RUBY_METHOD_FUNC(ux_load), 1);
   rb_define_method(rb_cTextUx, "prefix_search", RUBY_METHOD_FUNC(ux_prefix_search), 1);
+  rb_define_method(rb_cTextUx, "common_prefix_search", RUBY_METHOD_FUNC(ux_common_prefix_search), 1);
 
   rb_define_const(rb_cTextUx, "NOTFOUND", ux::NOTFOUND);
 }
@@ -114,4 +116,25 @@ ux_prefix_search(VALUE self, VALUE word)
     std::string key = trie->decodeKey(id);
     return rb_str_new2(key.c_str());
   }
+}
+
+static VALUE
+ux_common_prefix_search(VALUE self, VALUE word)
+{
+  Check_Type(word, T_STRING);
+
+  std::string w = StringValuePtr(word);
+
+  ux::Trie* trie = getTrie(self);
+  std::vector<ux::id_t> ret_ids;
+  size_t keys_size  = trie->commonPrefixSearch(w.c_str(), w.size(), ret_ids, ux::LIMIT_DEFAULT);
+  VALUE ary = rb_ary_new();
+  if (keys_size == 0) {
+    return ary;
+  }
+  for (size_t i = 0; i < keys_size; i++) {
+    std::string key = trie->decodeKey(ret_ids[i]);
+    rb_ary_push(ary, rb_str_new2(key.c_str()));
+  }
+  return ary;
 }
