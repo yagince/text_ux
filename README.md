@@ -24,6 +24,9 @@ require "text_ux"
 
 ux = TextUx.new
 ux.build(%w( hoge foo bar baz footprint ), true)
+ux.save("path/to/index")
+
+# ux.load("path/to/index")
 
 ux.prefix_search("hoge---foo") # => hoge
 ux.prefix_search("xxx") # => nil
