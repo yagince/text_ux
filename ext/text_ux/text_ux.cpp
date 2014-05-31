@@ -4,12 +4,7 @@
 #include <vector>
 #include <string>
 
-VALUE rb_cHoge;
 VALUE rb_cTextUx;
-
-static VALUE hello(VALUE self) {
-  return rb_str_new2("hello world");
-}
 
 static void  ux_free(ux::Trie* ptr);
 static VALUE ux_alloc(VALUE klass);
@@ -18,9 +13,6 @@ static VALUE ux_build(VALUE self, VALUE words, VALUE is_tail_ux);
 static VALUE ux_prefix_search(VALUE self, VALUE word);
 
 extern "C" void Init_text_ux(void) {
-  rb_cHoge = rb_define_class("Hoge", rb_cObject);
-  rb_define_method(rb_cHoge, "hello", RUBY_METHOD_FUNC(hello), 0);
-
   rb_cTextUx = rb_define_class("TextUx", rb_cObject);
   rb_define_alloc_func(rb_cTextUx, ux_alloc);
   rb_define_private_method(rb_cTextUx, "initialize", RUBY_METHOD_FUNC(ux_initialize), 0);
