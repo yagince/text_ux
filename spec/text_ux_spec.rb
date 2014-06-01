@@ -13,6 +13,10 @@ describe TextUx do
     context "配列以外を渡した場合" do
       it { expect{ ux.build( :hoge, true ) }.to raise_error }
     end
+
+    it "is_tail_uxは省略可能" do
+      expect{ ux.build(%w(hoge foo bar)) }.to_not raise_error
+    end
   end
 
   describe :save do

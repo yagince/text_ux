@@ -10,7 +10,7 @@ VALUE rb_cTextUx;
 static void  ux_free(ux::Trie* ptr);
 static VALUE ux_alloc(VALUE klass);
 static VALUE ux_initialize(VALUE self);
-static VALUE ux_build(VALUE self, VALUE words, VALUE is_tail_ux);
+static VALUE ux_build(int argc, VALUE *argv, VALUE self);
 static VALUE ux_save(VALUE self, VALUE file_name);
 static VALUE ux_load(VALUE self, VALUE file_name);
 
@@ -28,7 +28,7 @@ extern "C" void Init_text_ux(void) {
   rb_cTextUx = rb_define_class("TextUx", rb_cObject);
   rb_define_alloc_func(rb_cTextUx, ux_alloc);
   rb_define_private_method(rb_cTextUx, "initialize", RUBY_METHOD_FUNC(ux_initialize), 0);
-  rb_define_method(rb_cTextUx, "build", RUBY_METHOD_FUNC(ux_build), 2);
+  rb_define_method(rb_cTextUx, "build", RUBY_METHOD_FUNC(ux_build), -1);
   rb_define_method(rb_cTextUx, "save", RUBY_METHOD_FUNC(ux_save), 1);
   rb_define_method(rb_cTextUx, "load", RUBY_METHOD_FUNC(ux_load), 1);
 
@@ -71,9 +71,17 @@ ux_initialize(VALUE self)
 }
 
 static VALUE
-ux_build(VALUE self, VALUE words, VALUE is_tail_ux)
+// ux_build(VALUE self, VALUE words, VALUE is_tail_ux)
+ux_build(int argc, VALUE *argv, VALUE self)
 {
+  VALUE words, is_tail_ux;
+
+  rb_scan_args(argc, argv, "11", &words, &is_tail_ux);
+
   Check_Type(words, T_ARRAY);
+  if ( is_tail_ux == Qnil ) {
+    is_tail_ux = Qtrue;
+  }
 
   std::vector<std::string> keyList;
   long len = RARRAY_LEN(words);
@@ -84,7 +92,7 @@ ux_build(VALUE self, VALUE words, VALUE is_tail_ux)
   }
 
   ux::Trie* trie = getTrie(self);
-  trie->build(keyList, true);
+  trie->build(keyList, RTEST(is_tail_ux));
 
   return self;
 }
