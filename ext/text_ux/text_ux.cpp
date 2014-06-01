@@ -15,8 +15,8 @@ static VALUE ux_save(VALUE self, VALUE file_name);
 static VALUE ux_load(VALUE self, VALUE file_name);
 
 static VALUE ux_prefix_search(VALUE self, VALUE word);
-static VALUE ux_common_prefix_search(VALUE self, VALUE word);
-static VALUE ux_predictive_search(VALUE self, VALUE word);
+static VALUE ux_common_prefix_search(int argc, VALUE *argv, VALUE self);
+static VALUE ux_predictive_search(int argc, VALUE *argv, VALUE self);
 static VALUE ux_decode_key(VALUE self, VALUE index);
 
 static VALUE ux_size(VALUE self);
@@ -33,14 +33,16 @@ extern "C" void Init_text_ux(void) {
   rb_define_method(rb_cTextUx, "load", RUBY_METHOD_FUNC(ux_load), 1);
 
   rb_define_method(rb_cTextUx, "prefix_search", RUBY_METHOD_FUNC(ux_prefix_search), 1);
-  rb_define_method(rb_cTextUx, "common_prefix_search", RUBY_METHOD_FUNC(ux_common_prefix_search), 1);
-  rb_define_method(rb_cTextUx, "predictive_search", RUBY_METHOD_FUNC(ux_predictive_search), 1);
+  rb_define_method(rb_cTextUx, "common_prefix_search", RUBY_METHOD_FUNC(ux_common_prefix_search), -1);
+  rb_define_method(rb_cTextUx, "predictive_search", RUBY_METHOD_FUNC(ux_predictive_search), -1);
   rb_define_method(rb_cTextUx, "decode_key", RUBY_METHOD_FUNC(ux_decode_key), 1);
 
   rb_define_method(rb_cTextUx, "size", RUBY_METHOD_FUNC(ux_size), 0);
   rb_define_method(rb_cTextUx, "clear", RUBY_METHOD_FUNC(ux_clear), 0);
   rb_define_method(rb_cTextUx, "alloc_size", RUBY_METHOD_FUNC(ux_alloc_size), 0);
   rb_define_method(rb_cTextUx, "alloc_stat", RUBY_METHOD_FUNC(ux_alloc_stat), 0);
+
+  rb_define_const(rb_cTextUx, "DEFAULT_LIMIT", ux::LIMIT_DEFAULT);
 }
 
 static ux::Trie* getTrie(VALUE self) {
@@ -142,15 +144,25 @@ ux_prefix_search(VALUE self, VALUE word)
 }
 
 static VALUE
-ux_common_prefix_search(VALUE self, VALUE word)
+ux_common_prefix_search(int argc, VALUE *argv, VALUE self)
 {
-  Check_Type(word, T_STRING);
+  VALUE word, _limit;
 
+  rb_scan_args(argc, argv, "11", &word, &_limit);
+
+  Check_Type(word, T_STRING);
   std::string w = StringValuePtr(word);
+
+  size_t limit;
+  if (_limit == Qnil) {
+    limit = ux::LIMIT_DEFAULT;
+  } else {
+    limit = NUM2INT(_limit);
+  }
 
   ux::Trie* trie = getTrie(self);
   std::vector<ux::id_t> ret_ids;
-  size_t keys_size  = trie->commonPrefixSearch(w.c_str(), w.size(), ret_ids, ux::LIMIT_DEFAULT);
+  size_t keys_size  = trie->commonPrefixSearch(w.c_str(), w.size(), ret_ids, limit);
   VALUE ary = rb_ary_new();
   if (keys_size == 0) {
     return ary;
@@ -163,15 +175,25 @@ ux_common_prefix_search(VALUE self, VALUE word)
 }
 
 static VALUE
-ux_predictive_search(VALUE self, VALUE word)
+ux_predictive_search(int argc, VALUE *argv, VALUE self)
 {
-  Check_Type(word, T_STRING);
+  VALUE word, _limit;
 
+  rb_scan_args(argc, argv, "11", &word, &_limit);
+
+  Check_Type(word, T_STRING);
   std::string w = StringValuePtr(word);
+
+  size_t limit;
+  if (_limit == Qnil) {
+    limit = ux::LIMIT_DEFAULT;
+  } else {
+    limit = NUM2INT(_limit);
+  }
 
   ux::Trie* trie = getTrie(self);
   std::vector<ux::id_t> ret_ids;
-  size_t keys_size  = trie->predictiveSearch(w.c_str(), w.size(), ret_ids, ux::LIMIT_DEFAULT);
+  size_t keys_size  = trie->predictiveSearch(w.c_str(), w.size(), ret_ids, limit);
   VALUE ary = rb_ary_new();
   if (keys_size == 0) {
     return ary;

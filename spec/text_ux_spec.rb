@@ -73,6 +73,12 @@ describe TextUx do
     context "結果がない場合" do
       it { expect(builded.common_prefix_search("XXX")).to be_empty }
     end
+
+    context "limitを指定した場合" do
+      it "一致した結果からlimit以内の数だけ取得できる" do
+        expect(builded.common_prefix_search("footprint", 1)).to match_array(%w(foo))
+      end
+    end
   end
 
   describe :predictive_search do
@@ -85,6 +91,12 @@ describe TextUx do
 
     context "結果がない場合" do
       it { expect(builded.predictive_search("XXX")).to be_empty }
+    end
+
+    context "limitを指定した場合" do
+      it "一致した結果からlimit以内の数だけ取得できる" do
+        expect(builded.predictive_search("fo", 1)).to match_array(%w(foo))
+      end
     end
   end
 
@@ -116,5 +128,10 @@ describe TextUx do
     it { expect(builded.alloc_stat).to_not be_empty }
   end
 
+  describe :constants do
+    describe "DEFAULT_LIMIT" do
+      it { expect(TextUx::DEFAULT_LIMIT).to be_a Numeric }
+    end
+  end
 end
 
