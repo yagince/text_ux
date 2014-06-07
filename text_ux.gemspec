@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["straitwalk@gmail.com"]
   spec.summary       = %q{Text::Ux - More Succinct Trie Data structure (binding for ux-trie)}
   spec.description   = %q{Text::Ux - More Succinct Trie Data structure (binding for ux-trie)}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/yagince/text_ux"
   spec.license       = "MIT"
   spec.extensions    = ["ext/text_ux/extconf.rb"]
 
