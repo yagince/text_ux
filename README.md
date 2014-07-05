@@ -5,6 +5,9 @@ https://code.google.com/p/ux-trie/wiki/Tutorial_Japanese
 
 ## Installation
 
+You may need to install ux-trie.
+see: [ux-trie installation](https://code.google.com/p/ux-trie/wiki/Tutorial_Japanese#インストール方法)
+
 Add this line to your application's Gemfile:
 
     gem 'text_ux'
